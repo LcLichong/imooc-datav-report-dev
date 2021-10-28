@@ -7,7 +7,7 @@
                         :default-active="activeIndex"
                         @select="onMenuSelect"
                         mode="horizontal"
-                        class="sales-view-el-menu"
+                        class="sales-view-menu"
                     >
                         <el-menu-item index="1">销售额</el-menu-item>
                         <el-menu-item index="2">访问量</el-menu-item>
