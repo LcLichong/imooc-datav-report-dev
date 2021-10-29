@@ -151,11 +151,10 @@ export default {
                     bottom: 50
                 },
                 tooltip: {
-                    trigger: 'item',
-                    formatter: function (params) {
-                        const str = params.name + '<br/>' + params.marker + params.seriesName + '：' + params.value
-                        return str
-                    }
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                    trigger: 'axis'
                 }
             },
             rankData: [
