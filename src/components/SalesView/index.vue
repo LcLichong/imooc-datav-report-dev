@@ -137,6 +137,7 @@ export default {
                 },
                 series: [
                     {
+                        name: 'sales',
                         type: 'bar',
                         barWidth: '35%',
                         data: [200, 250, 300, 350, 300, 250, 200, 250, 300, 350, 300, 250]
@@ -148,6 +149,13 @@ export default {
                     left: 60,
                     right: 60,
                     bottom: 50
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function (params) {
+                        const str = params.name + '<br/>' + params.marker + params.seriesName + '：' + params.value
+                        return str
+                    }
                 }
             },
             rankData: [
