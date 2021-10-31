@@ -25,8 +25,6 @@ export default {
 
 <style scoped>
 .home {
-    width: 100%;
-    height: 100%;
     background: #eee;
     padding: 20px;
     box-sizing: border-box;

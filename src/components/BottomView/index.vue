@@ -133,14 +133,6 @@ export default {
                     count: 100,
                     users: 90,
                     range: '90%'
-                },
-                {
-                    id: 5,
-                    rank: 5,
-                    keyword: '无锡',
-                    count: 100,
-                    users: 90,
-                    range: '90%'
                 }
             ],
             radioSelect: '品类',
