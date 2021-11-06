@@ -34,7 +34,7 @@ export default {
             return this.reportData
         },
         getWordCloud() {
-            return this.wordcloud
+            return this.wordCloud
         },
         getMapData() {
             return this.mapData
@@ -43,8 +43,8 @@ export default {
     provide() {
         return {
             getReportData: this.getReportData,
-            wordCloud: this.getWordCloud,
-            mapData: this.getMapData
+            getWordCloud: this.getWordCloud,
+            getMapData: this.getMapData
         }
     },
     mounted() {

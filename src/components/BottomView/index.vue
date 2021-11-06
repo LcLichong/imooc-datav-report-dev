@@ -25,11 +25,12 @@
                                 <el-table-column prop="keyword" label="关键词"></el-table-column>
                                 <el-table-column prop="count" label="总搜索量"></el-table-column>
                                 <el-table-column prop="users" label="搜索用户数"></el-table-column>
+                                <el-table-column prop="range" label="搜索占比"></el-table-column>
                             </el-table>
                             <el-pagination
                                 layout="prev, pager, next"
-                                :total="100"
-                                :page-size="4"
+                                :total="total"
+                                :page-size="pageSize"
                                 background
                                 @current-change="onPageChange"
                             ></el-pagination>
@@ -62,9 +63,30 @@
 </template>
 
 <script>
+import commonDataMixin from '../../mixins/commonDataMixin'
+
 export default {
+    mixins: [commonDataMixin],
     mounted() {
         this.renderPieChart()
+    },
+    watch: {
+        wordCloud() {
+            const totalData = []
+            this.wordCloud.forEach((item, index) => {
+                totalData.push({
+                    id: index + 1,
+                    rank: index + 1,
+                    keyword: item.word,
+                    count: item.count,
+                    users: item.user,
+                    range: `${((item.user / item.count) * 100).toFixed(2)}%`
+                })
+            })
+            this.totalData = totalData
+            this.total = this.totalData.length
+            this.renderTable(1)
+        }
     },
     data() {
         return {
@@ -101,47 +123,17 @@ export default {
                     right: 0
                 }
             },
-            tableData: [
-                {
-                    id: 1,
-                    rank: 1,
-                    keyword: '无锡',
-                    count: 100,
-                    users: 90,
-                    range: '90%'
-                },
-                {
-                    id: 2,
-                    rank: 2,
-                    keyword: '无锡',
-                    count: 100,
-                    users: 90,
-                    range: '90%'
-                },
-                {
-                    id: 3,
-                    rank: 3,
-                    keyword: '无锡',
-                    count: 100,
-                    users: 90,
-                    range: '90%'
-                },
-                {
-                    id: 4,
-                    rank: 4,
-                    keyword: '无锡',
-                    count: 100,
-                    users: 90,
-                    range: '90%'
-                }
-            ],
+            tableData: [],
+            totalData: [],
+            total: 0,
+            pageSize: 4,
             radioSelect: '品类',
             categoryOptions: {}
         }
     },
     methods: {
         onPageChange(page) {
-            console.log(page)
+            this.renderTable(page)
         },
         renderPieChart() {
             const mockData = [
@@ -259,6 +251,12 @@ export default {
                     }
                 }
             }
+        },
+        renderTable(page) {
+            this.tableData = this.totalData.slice(
+                (page - 1) * this.pageSize,
+                (page - 1) * this.pageSize + this.pageSize
+            )
         }
     }
 }
