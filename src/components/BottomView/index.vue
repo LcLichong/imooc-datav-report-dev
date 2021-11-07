@@ -10,13 +10,13 @@
                         <div class="chart-inner">
                             <div class="chart">
                                 <div class="chart-title">搜索用户数</div>
-                                <div class="chart-data">122,731</div>
+                                <div class="chart-data">{{ userCount }}</div>
                                 <v-chart :options="searchUserOption"></v-chart>
                             </div>
                             <div class="chart">
                                 <div class="chart-title">搜索量</div>
-                                <div class="chart-data">250,457</div>
-                                <v-chart :options="searchUserOption"></v-chart>
+                                <div class="chart-data">{{ searchCount }}</div>
+                                <v-chart :options="searchNumberOption"></v-chart>
                             </div>
                         </div>
                         <div class="table-wrapper">
@@ -65,6 +65,8 @@
 <script>
 import commonDataMixin from '../../mixins/commonDataMixin'
 
+const colors = ['#8d7fec', '#5085f2', '#f8726b', '#e7e702', '#78f283', '#4bc1fc']
+
 export default {
     mixins: [commonDataMixin],
     mounted() {
@@ -86,49 +88,34 @@ export default {
             this.totalData = totalData
             this.total = this.totalData.length
             this.renderTable(1)
+            this.userCount = this.format(
+                totalData.reduce((s, i) => {
+                    return i.users + s
+                }, 0)
+            )
+            this.searchCount = this.format(
+                totalData.reduce((s, i) => {
+                    return i.count + s
+                }, 0)
+            )
+            this.renderLineChart()
+        },
+        category1() {
+            this.renderPieChart()
         }
     },
     data() {
         return {
-            searchUserOption: {
-                xAxis: {
-                    type: 'category',
-                    boundaryGap: false
-                },
-                yAxis: {
-                    show: false,
-                    min: 0,
-                    max: 300
-                },
-                series: [
-                    {
-                        type: 'line',
-                        data: [100, 150, 200, 250, 200, 150, 100, 50, 100, 150],
-                        areaStyle: {
-                            color: 'rgba(95,187,255,.5)'
-                        },
-                        lineStyle: {
-                            color: 'rgb(95,187,255)'
-                        },
-                        itemStyle: {
-                            opacity: 0
-                        },
-                        smooth: true
-                    }
-                ],
-                grid: {
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                    right: 0
-                }
-            },
+            searchUserOption: {},
+            searchNumberOption: {},
             tableData: [],
             totalData: [],
             total: 0,
             pageSize: 4,
             radioSelect: '品类',
-            categoryOptions: {}
+            categoryOptions: {},
+            userCount: 0,
+            searchCount: 0
         }
     },
     methods: {
@@ -136,39 +123,35 @@ export default {
             this.renderTable(page)
         },
         renderPieChart() {
-            const mockData = [
-                {
-                    legendname: '粉面粥店',
-                    value: 67,
-                    percent: '15.40',
+            let data = []
+            let axis = []
+            let total = 0
+            if (this.radioSelect === '品类') {
+                data = this.category1.data1.slice(0, 6)
+                axis = this.category1.axisX.slice(0, 6)
+                total = data.reduce((s, i) => s + i, 0)
+            } else {
+                data = this.category2.data1.slice(0, 6)
+                axis = this.category2.axisX.slice(0, 6)
+                total = data.reduce((s, i) => s + i, 0)
+            }
+            const chartData = []
+            data.forEach((item, index) => {
+                const percent = `${((item / total) * 100).toFixed(2)}%`
+                chartData.push({
+                    legendname: axis[index],
+                    value: item,
+                    percent: percent,
                     itemStyle: {
-                        color: '#e7e702'
+                        color: colors[index % 6]
                     },
-                    name: '粉面粥店 | 15.40%'
-                },
-                {
-                    legendname: '简餐便当',
-                    value: 97,
-                    percent: '22.30',
-                    itemStyle: {
-                        color: '#8d7fec'
-                    },
-                    name: '简餐便当 | 22.30%'
-                },
-                {
-                    legendname: '汉堡披萨',
-                    value: 92,
-                    percent: '22.15',
-                    itemStyle: {
-                        color: '#5085f2'
-                    },
-                    name: '汉堡披萨 | 22.15%'
-                }
-            ]
+                    name: `${axis[index]} | ${percent}`
+                })
+            })
             this.categoryOptions = {
                 title: [
                     {
-                        text: '品类分布',
+                        text: `${this.radioSelect}分布`,
                         textStyle: {
                             fontSize: 14,
                             color: '#666'
@@ -178,7 +161,7 @@ export default {
                     },
                     {
                         text: '累计订单量',
-                        subtext: '320',
+                        subtext: total,
                         x: '34.5%',
                         y: '42.5%',
                         textStyle: {
@@ -196,7 +179,7 @@ export default {
                     {
                         name: '品类分布',
                         type: 'pie',
-                        data: mockData,
+                        data: chartData,
                         label: {
                             normal: {
                                 show: true,
@@ -257,6 +240,53 @@ export default {
                 (page - 1) * this.pageSize,
                 (page - 1) * this.pageSize + this.pageSize
             )
+        },
+        renderLineChart() {
+            const createOption = (key) => {
+                const data = []
+                const axis = []
+                this.wordCloud.forEach((item) => {
+                    data.push(item[key])
+                })
+                this.wordCloud.forEach((item) => {
+                    axis.push(item.word)
+                })
+                return {
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: axis
+                    },
+                    yAxis: {
+                        show: false
+                    },
+                    tooltip: {},
+                    series: [
+                        {
+                            type: 'line',
+                            data: data,
+                            areaStyle: {
+                                color: 'rgba(95,187,255,.5)'
+                            },
+                            lineStyle: {
+                                color: 'rgb(95,187,255)'
+                            },
+                            itemStyle: {
+                                opacity: 0
+                            },
+                            smooth: true
+                        }
+                    ],
+                    grid: {
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0
+                    }
+                }
+            }
+            this.searchUserOption = createOption('user')
+            this.searchNumberOption = createOption('count')
         }
     }
 }
