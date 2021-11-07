@@ -3,60 +3,30 @@
 </template>
 
 <script>
+import commonDataMixin from '../../mixins/commonDataMixin'
+
 export default {
+    mixins: [commonDataMixin],
     data() {
         return {
-            chartData: {
-                columns: ['name', 'value'],
-                rows: [
-                    {
-                        name: '翀',
-                        value: 100 * Math.random()
-                    },
-                    {
-                        name: '翀2',
-                        value: 100 * Math.random()
-                    },
-                    {
-                        name: '翀3',
-                        value: 100 * Math.random()
-                    },
-                    {
-                        name: '翀4',
-                        value: 100 * Math.random()
-                    },
-                    {
-                        name: '翀5',
-                        value: 100 * Math.random()
-                    },
-                    {
-                        name: '翀6',
-                        value: 100 * Math.random()
-                    },
-                    {
-                        name: '翀7',
-                        value: 100 * Math.random()
-                    },
-                    {
-                        name: '翀8',
-                        value: 100 * Math.random()
-                    },
-                    {
-                        name: '翀9',
-                        value: 100 * Math.random()
-                    },
-                    {
-                        name: '翀10',
-                        value: 100 * Math.random()
-                    },
-                    {
-                        name: '翀11',
-                        value: 100 * Math.random()
-                    }
-                ]
-            },
+            chartData: {},
             chartSettings: {
                 color: ['rgba(97,216,0,.7)', 'rgba(204,178,26,.7)', 'rgba(245,166,35,.7)', 'rgba(156,13,113,.7)']
+            }
+        }
+    },
+    watch: {
+        wordCloud() {
+            const data = []
+            this.wordCloud.forEach((item) => {
+                data.push({
+                    name: item.word,
+                    value: item.count
+                })
+            })
+            this.chartData = {
+                columns: ['name', 'value'],
+                rows: data
             }
         }
     }

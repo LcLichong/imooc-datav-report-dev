@@ -45,7 +45,7 @@
                     <div class="title-wrapper">
                         <div class="title">分类销售排行</div>
                         <div class="radio-wrapper">
-                            <el-radio-group v-model="radioSelect" size="small">
+                            <el-radio-group v-model="radioSelect" size="small" @change="onCategoryChange">
                                 <el-radio-button label="品类"></el-radio-button>
                                 <el-radio-button label="商品"></el-radio-button>
                             </el-radio-group>
@@ -123,6 +123,7 @@ export default {
             this.renderTable(page)
         },
         renderPieChart() {
+            if (!this.category1.data1 || !this.category2.data1) return
             let data = []
             let axis = []
             let total = 0
@@ -287,6 +288,10 @@ export default {
             }
             this.searchUserOption = createOption('user')
             this.searchNumberOption = createOption('count')
+        },
+        onCategoryChange(type) {
+            this.radioSelect = type
+            this.renderPieChart()
         }
     }
 }
